@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-app
+spec:
+  containers:
+  - name: app
+    image: antonglinisty/my-app
+    volumeMounts:
+      - name: logs
+        mountPath: /app/logs
+    envFrom:
+      - configMapRef:
+          name: my-configmap
+  volumes:
+    - name: logs
+      emptyDir: {}
