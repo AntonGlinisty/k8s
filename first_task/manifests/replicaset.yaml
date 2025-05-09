@@ -23,4 +23,6 @@ spec:
                 name: my-configmap
       volumes:
         - name: logs
-          emptyDir: {}
+          hostPath:
+            path: /var/log/my-app
+            type: DirectoryOrCreate

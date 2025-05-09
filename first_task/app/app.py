@@ -6,11 +6,14 @@ app = Flask(__name__)
 LOG_DIR = '/app/logs'
 LOG_FILE = os.path.join(LOG_DIR, 'app.log')
 
-os.makedirs(LOG_DIR, exist_ok=True)
+DEFAULT_PORT = 5000
+DEFAULT_GREETINGS = "Welcome to the custom app\n"
+
+open(LOG_FILE, 'a').close()
 
 @app.route('/', methods=['GET'])
-def welcome():
-    return os.environ.get("APP_GREETINGS", "Welcome to the custom app\n")
+def greetings():
+    return os.environ.get("APP_GREETINGS", DEFAULT_GREETINGS)
 
 @app.route('/status', methods=['GET'])
 def status():
@@ -27,12 +30,10 @@ def add_log():
 
 @app.route('/logs', methods=['GET'])
 def get_logs():
-    if not os.path.exists(LOG_FILE):
-        return {}
     with open(LOG_FILE, 'r', encoding='utf-8') as file:
         logs = file.read()
     return logs
 
 if __name__ == "__main__":
-    port = int(os.environ.get("APP_PORT", 5000))
+    port = int(os.environ.get("APP_PORT", DEFAULT_PORT))
     app.run(host="0.0.0.0", port=port)

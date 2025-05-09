@@ -1,49 +1,172 @@
-### **Развёртывание распределённой системы логирования и хранения с резервным копированием**
+### App
 
-1. **Создать пользовательское веб-приложение (API)**  
-   Приложение должно реализовать следующие REST-эндпоинты:
-   - `GET /` — возвращает строку `"Welcome to the custom app"`
-   - `GET /status` — возвращает JSON `{"status": "ok"}`
-   - `POST /log` — принимает JSON `{"message": "some log"}` и записывает его в файл `/app/logs/app.log`
-   - `GET /logs` — возвращает содержимое файла `/app/logs/app.log`
+Курл эндпоинтов
+```
+curl -X GET http://localhost:5000/
+```
+```
+curl -X GET http://localhost:5000/status
+```
+```
+curl -X POST http://localhost:5000/log \
+-H 'Content-Type: application/json' \
+-d '{
+    "message": "some log"
+}'
+```
+```
+curl -X GET http://localhost:5000/logs
+```
 
-   Приложение должно:
-   - Писать логи в `/app/logs/app.log`
-   - Использовать конфигурационные параметры из ConfigMap
+### Docker
 
-2. **Развернуть приложение как Pod для начального теста**
-   - Написать Dockerfile для приложения
-   - Создать Pod, монтирующий:
-      - `emptyDir` volume в `/app/logs`
-      - ConfigMap с настройками в `/app/config` (или через переменные окружения)
+Создание образа
+```
+docker build -t antonglinisty/my-app ./
+```
+Загрузка образа в DockerHub
+```
+docker push antonglinisty/my-app
+```
+Удаление образа
+```
+docker rmi antonglinisty/my-app
+```
 
-3. **Развернуть приложение как Deployment**
-   - Создать Deployment с 3 репликами
-   - Настроить монтирование `emptyDir` для логов
-   - Обновить Deployment, чтобы изменения в ConfigMap автоматически применялись
-   - Проверить через Service и `kubectl port-forward`, что API работает
+### Configmap
 
-4. **Создать Service для балансировки нагрузки**
-   - ClusterIP-сервис, направляющий трафик на поды приложения
-   - Проверить: `curl http://<service-name>/logs` и `curl -X POST http://<service-name>/log -d '{"message": "test"}'`
-   - Убедиться, что запросы распределяются между подами
+Создание configmap
+```
+kubectl apply -f ./configmap.yaml
+```
+Проверка, что configmap создан
+```
+kubectl get cm
+```
+Удаление configmap
+```
+kubectl delete cm my-configmap
+```
 
-5. **Развернуть DaemonSet с log-agent**
-   - DaemonSet должен:
-      - Быть запущен на каждом узле
-      - Собирать логи приложения из подов (через `hostPath` или `emptyDir`, при наличии доступа)
-      - Перенаправлять логи во stdout или сохранять локально на узле
-   - Проверить, что `kubectl logs <log-agent-pod>` содержит записи из `app.log`
+### Pod
 
-6. **Развернуть CronJob для архивирования логов**
-   - CronJob должен запускаться раз в 10 минут
-   - Команда: `tar -czf /tmp/app-logs-<timestamp>.tar.gz /app/logs/`
-   - Логи берутся с сервисов приложения через HTTP API `/logs` (например, `curl`) или из общей директории, если доступна
-   - Результат сохраняется в контейнере в `/tmp` (внутри пода CronJob)
+Создание pod
+```
+kubectl apply -f ./pod.yaml
+```
+Проверка, что pod создан
+```
+kubectl get pod
+```
+Установка туннеля
+```
+kubectl port-forward my-app 5000:5000
+```
+Подключение к pod
+```
+kubectl exec -it my-app -- bash
+```
+Удаление pod
+```
+kubectl delete pod my-app
+```
 
-7. **Создать единый bash-скрипт `deploy.sh` для автоматического развёртывания всей системы**
-   - Скрипт должен:
-      - Создавать все необходимые **ConfigMap**, **Pod**, **Deployment**, **Service**, **DaemonSet**, **StatefulSet**, **CronJob** и другие объекты
-      - Использовать команды `kubectl apply -f` с заранее подготовленными YAML-файлами
-      - Ожидать готовности ключевых компонентов
-   - В **README.md** проекта добавьте команду для запуска скрипта из терминала
+### Replicaset
+
+Создание replicaset
+```
+kubectl apply -f ./replicaset.yaml 
+```
+Проверка, что replicaset создан
+```
+kubectl get rs
+```
+Удаление replicaset
+```
+kubectl delete rs my-replicaset
+```
+
+### Deployment
+
+Создание deployment
+```
+kubectl apply -f ./deployment.yaml 
+```
+Проверка, что deployment создан
+```
+kubectl get deployment
+```
+Обновление deployment
+```
+kubectl rollout restart deployment my-deployment
+```
+Удаление deployment
+```
+kuberctl delete deployment my-deployment
+```
+ 
+ ### Service
+
+Создание service
+```
+kubectl apply -f ./service.yaml
+```
+Проверка, что service создан
+```
+kubectl get svc
+```
+Создание контейнера для курла эндпоинтов
+```
+kubectl run test --image=amouat/network-utils -it bash
+```
+Запись логов
+```
+curl -X POST http://my-service:5000/log \
+-H 'Content-Type: application/json' \
+-d '{
+    "message": "some log"
+}'
+```
+Чтение логов
+```
+curl http://my-service:5000/logs
+```
+Удаление service
+```
+kubectl delete svc my-service
+```
+
+### Daemonset
+
+Создание daemonset
+```
+kubectl apply -f ./daemonset.yaml
+```
+Проверка, что daemonset создан
+```
+kubectl get ds
+```
+Чтение логов daemonset
+```
+kubectl logs <daemonset-pod-name>
+```
+Удаление daemonset
+```
+kubectl delete ds my-daemonset
+```
+
+
+### Cronjob
+
+Запуск cronjob
+```
+kubectl apply -f ./cronjob.yaml
+```
+Проверка, что cronjob создан
+```
+kubectl get cj
+```
+Удаление cronjob
+```
+kubectl delete cj my-cronjob
+```

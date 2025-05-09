@@ -1,0 +1,28 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: my-cronjob
+spec:
+  schedule: "*/10 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: archiver
+            image: busybox:latest
+            command:
+              - sh
+              - -c
+              - |
+                TIMESTAMP=$(date +'%Y%m%d-%H%M%S')
+                tar -czf /app/logs/log_${TIMESTAMP}.tar.gz /app/logs/app.log
+            volumeMounts:
+            - mountPath: /app/logs
+              name: logs
+          volumes:
+          - name: logs
+            hostPath:
+              path: /var/log/my-app
+              type: DirectoryOrCreate

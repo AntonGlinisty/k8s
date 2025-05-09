@@ -17,10 +17,12 @@ spec:
           image: antonglinisty/my-app
           volumeMounts:
             - name: logs
-              mountPath: /app/logs
+              mountPath: /app/logs/
           envFrom:
             - configMapRef:
                 name: my-configmap
       volumes:
         - name: logs
-          emptyDir: {}
+          hostPath:
+            path: /var/log/my-app/
+            type: DirectoryOrCreate
