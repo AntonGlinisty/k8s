@@ -1,3 +1,8 @@
+### Условие задачи находится в файле task.md
+
+## Полезные команды
+
+
 ### App
 
 Курл эндпоинтов
@@ -33,140 +38,37 @@ docker push antonglinisty/my-app
 docker rmi antonglinisty/my-app
 ```
 
-### Configmap
-
-Создание configmap
+### K8s entities
+Создание сущности
 ```
-kubectl apply -f ./configmap.yaml
+kubectl apply -f ./manifests/<entity-name>.yaml
 ```
-Проверка, что configmap создан
+Проверка, что сущность создана
 ```
-kubectl get cm
+kubectl get <entity-name>
 ```
-Удаление configmap
+Удаление сущности
 ```
-kubectl delete cm my-configmap
+kubectl delete <entity-name> my-<entity-name>
 ```
-
-### Pod
-
-Создание pod
-```
-kubectl apply -f ./pod.yaml
-```
-Проверка, что pod создан
-```
-kubectl get pod
-```
+---
 Установка туннеля
 ```
-kubectl port-forward my-app 5000:5000
+kubectl port-forward <pod-name> 5000:5000
 ```
-Подключение к pod
+Подключение к поду
 ```
-kubectl exec -it my-app -- bash
+kubectl exec -it <pod-name> -- bash
 ```
-Удаление pod
+Чтение логов пода
 ```
-kubectl delete pod my-app
-```
-
-### Replicaset
-
-Создание replicaset
-```
-kubectl apply -f ./replicaset.yaml 
-```
-Проверка, что replicaset создан
-```
-kubectl get rs
-```
-Удаление replicaset
-```
-kubectl delete rs my-replicaset
-```
-
-### Deployment
-
-Создание deployment
-```
-kubectl apply -f ./deployment.yaml 
-```
-Проверка, что deployment создан
-```
-kubectl get deployment
+kubectl logs <pod-name>
 ```
 Обновление deployment
 ```
 kubectl rollout restart deployment my-deployment
 ```
-Удаление deployment
-```
-kuberctl delete deployment my-deployment
-```
- 
- ### Service
-
-Создание service
-```
-kubectl apply -f ./service.yaml
-```
-Проверка, что service создан
-```
-kubectl get svc
-```
-Создание контейнера для курла эндпоинтов
+Создание пода внутри кластера для общения с service
 ```
 kubectl run test --image=amouat/network-utils -it bash
-```
-Запись логов
-```
-curl -X POST http://my-service:5000/log \
--H 'Content-Type: application/json' \
--d '{
-    "message": "some log"
-}'
-```
-Чтение логов
-```
-curl http://my-service:5000/logs
-```
-Удаление service
-```
-kubectl delete svc my-service
-```
-
-### Daemonset
-
-Создание daemonset
-```
-kubectl apply -f ./daemonset.yaml
-```
-Проверка, что daemonset создан
-```
-kubectl get ds
-```
-Чтение логов daemonset
-```
-kubectl logs <daemonset-pod-name>
-```
-Удаление daemonset
-```
-kubectl delete ds my-daemonset
-```
-
-
-### Cronjob
-
-Запуск cronjob
-```
-kubectl apply -f ./cronjob.yaml
-```
-Проверка, что cronjob создан
-```
-kubectl get cj
-```
-Удаление cronjob
-```
-kubectl delete cj my-cronjob
 ```
