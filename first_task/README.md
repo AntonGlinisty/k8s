@@ -43,16 +43,29 @@ docker rmi antonglinisty/my-app
 ```
 kubectl apply -f ./manifests/<entity-name>.yaml
 ```
-Проверка, что сущность создана
+Посмотреть на сущность
 ```
 kubectl get <entity-name>
+```
+Посмотреть на служебные сущности
+```
+kubectl get <entity-name> -A
+```
+Посмотреть на все сущности
+```
+kubectl get all
 ```
 Удаление сущности
 ```
 kubectl delete <entity-name> my-<entity-name>
 ```
----
-Установка туннеля
+
+### K8s common
+Автодополнение
+```
+source <(kubectl completion zsh)
+```
+Установка туннеля до пода
 ```
 kubectl port-forward <pod-name> 5000:5000
 ```
@@ -71,4 +84,22 @@ kubectl rollout restart deployment my-deployment
 Создание пода внутри кластера для общения с service
 ```
 kubectl run test --image=amouat/network-utils -it bash
+```
+
+### Minikube
+Подключение аддона дашборда
+```
+minikube addons enable dashboard
+```
+Открытие туннеля по пода дашборда
+```
+minikube dashboard
+```
+Открытие туннеля к сервису
+```
+minikube service <service-name>
+```
+Ssh на ноду кластера
+```
+minikube ssh
 ```

@@ -21,6 +21,28 @@ spec:
           envFrom:
             - configMapRef:
                 name: my-configmap
+          readinessProbe:
+              failureThreshold: 3
+              httpGet:
+                  path: /status
+                  port: 5000
+              periodSeconds: 30
+              successThreshold: 1
+              timeoutSeconds: 1
+          livenessProbe:
+              failureThreshold: 3
+              httpGet:
+                  path: /status
+                  port: 5000
+              periodSeconds: 30
+              successThreshold: 1
+              timeoutSeconds: 1
+          startupProbe:
+              failureThreshold: 10
+              httpGet:
+                  path: /status
+                  port: 5000
+              periodSeconds: 30
       volumes:
         - name: logs
           hostPath:
