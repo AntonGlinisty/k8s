@@ -77,10 +77,6 @@ kubectl exec -it <pod-name> -- bash
 ```
 kubectl logs <pod-name>
 ```
-Обновление deployment
-```
-kubectl rollout restart deployment my-deployment
-```
 Создание пода внутри кластера для общения с service
 ```
 kubectl run test --image=amouat/network-utils -it bash
