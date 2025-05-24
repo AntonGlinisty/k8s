@@ -60,3 +60,15 @@ spec:
         host: my-service
         port:
           number: 5000
+
+  - match:
+      - uri:
+          prefix: /
+    fault:
+      abort:
+        httpStatus: 404
+        percentage:
+          value: 100
+    route:
+      - destination:
+          host: istio-blackhole
